@@ -1,8 +1,20 @@
-name: Run shell commands
-on: [push, pull_request]
+name: Dynamic Scan Using ZAP
+on: [push]
+
 jobs:
-  my-first-shell-execution:
+  zap_scan:
     runs-on: ubuntu-latest
+    name: Scan the webapplication
     steps:
-      - name: Display the output of echo commands
-        run: echo "This is my first worflow run"
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: master
+      - name: ZAP Scan
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: 'ghcr.io/zaproxy/zaproxy:stable'
+          target: 'http://testasp.vulnweb.com'
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a'
